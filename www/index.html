@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b5d7a">
+<title>خريطة المسح الميداني</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg">
+<link rel="stylesheet" href="leaflet/leaflet.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="map"></div>
+<div id="cross"></div>
+<div id="topbar"><span id="coords">—</span><span id="gpsinfo"></span></div>
+
+<div id="drawbar" hidden>
+  <div id="drawstat">—</div>
+  <div class="drow">
+    <button id="dUndo">↩ تراجع</button>
+    <button id="dCenter">＋ المركز</button>
+    <button id="dGps">＋ موقعي</button>
+    <button id="dDone" class="main">✔ إنهاء</button>
+    <button id="dCancel">✕</button>
+  </div>
+</div>
+
+<div id="toolbar">
+  <button id="btnLoc"><b>📡</b><small>موقعي</small></button>
+  <button id="btnAddGps"><b>📍</b><small>نقطة هنا</small></button>
+  <button id="btnAdd" class="main"><b>＋</b><small>عند المركز</small></button>
+  <button id="btnList"><b>📋</b><small>العناصر (<span id="count">0</span>)</small></button>
+  <button id="btnMore"><b>⋯</b><small>المزيد</small></button>
+</div>
+
+<div id="sheetList" class="sheet" hidden>
+  <div class="sheet-h"><input id="search" placeholder="بحث بالاسم…"><button class="x" data-close="sheetList">✕</button></div>
+  <div id="items"></div>
+</div>
+
+<div id="sheetMore" class="sheet" hidden>
+  <div class="sheet-h"><b>أدوات</b><button class="x" data-close="sheetMore">✕</button></div>
+  <div class="grid">
+    <button id="drLine" class="main">📏 رسم خط / مسار</button>
+    <button id="drPoly" class="main">⬠ رسم مضلع / مساحة</button>
+    <button id="exGeo">تصدير GeoJSON</button>
+    <button id="exCsv">تصدير CSV (Excel)</button>
+    <button id="exKml">تصدير KML (Google Earth)</button>
+    <button id="imp">استيراد GeoJSON</button>
+    <button id="bkp">نسخة احتياطية كاملة (مع الصور)</button>
+    <button id="rst">استعادة نسخة احتياطية</button>
+    <button id="offArea">حفظ المنطقة الحالية أوفلاين</button>
+    <button id="offClear">مسح الخرائط المحفوظة</button>
+    <button id="perm">فحص أذونات الموقع والكاميرا</button>
+    <button id="clearAll" class="danger">حذف كل البيانات</button>
+  </div>
+  <p class="note">اضغط على شريط الإحداثيات بالأعلى للتبديل بين الدرجات العشرية وUTM. الخرائط: © OpenStreetMap contributors — Esri, Maxar, Earthstar Geographics. حفظ المنطقة محدود بـ 500 مربع للمرة الواحدة؛ راجع شروط المزوّد للاستخدام المكثف.</p>
+  <input type="file" id="file" accept=".geojson,.json,application/json" hidden>
+  <input type="file" id="fileBk" accept=".json,application/json" hidden>
+</div>
+
+<div id="modal" hidden>
+  <div class="card">
+    <h3 id="mTitle">نقطة جديدة</h3>
+    <label>الاسم / الرمز<input id="fName" placeholder="مثال: بئر 12 - الشابية"></label>
+    <div class="row">
+      <label>النوع<select id="fType"></select></label>
+      <label>الحالة<select id="fStatus"></select></label>
+    </div>
+    <div class="row">
+      <label>خط العرض<input id="fLat" inputmode="decimal"></label>
+      <label>خط الطول<input id="fLng" inputmode="decimal"></label>
+    </div>
+    <div class="row utm" dir="ltr">
+      <label>Zone<input id="fZone" inputmode="numeric"></label>
+      <label>N/S<select id="fHemi"><option>N</option><option>S</option></select></label>
+      <label>Easting<input id="fE" inputmode="decimal"></label>
+      <label>Northing<input id="fN" inputmode="decimal"></label>
+    </div>
+    <div class="row">
+      <label>عمق البئر (م)<input id="fDepth" inputmode="decimal"></label>
+      <label>التصريف (م³/ساعة)<input id="fYield" inputmode="decimal"></label>
+    </div>
+    <div class="row">
+      <label>الملوحة TDS (mg/L)<input id="fTds" inputmode="decimal"></label>
+      <label>منسوب المياه الساكن (م)<input id="fSwl" inputmode="decimal"></label>
+    </div>
+    <label>ملاحظات<textarea id="fNotes" rows="2"></textarea></label>
+    <label>الصور</label>
+    <div id="thumbs"></div>
+    <div class="row">
+      <button id="phCam">📷 تصوير</button>
+      <button id="phGal">🖼️ من المعرض</button>
+    </div>
+    <div class="row btns">
+      <button id="fSave" class="main">حفظ</button>
+      <button id="fCancel">إلغاء</button>
+      <button id="fDel" class="danger" hidden>حذف</button>
+    </div>
+  </div>
+</div>
+
+<div id="mShape" class="modal2" hidden>
+  <div class="card">
+    <h3 id="sTitle">عنصر مرسوم</h3>
+    <label>الاسم<input id="sName" placeholder="مثال: خط ناقل رئيسي"></label>
+    <label>التصنيف<select id="sCat"></select></label>
+    <div id="sStats" class="stats"></div>
+    <label>ملاحظات (قطر الأنبوب، المادة…)<textarea id="sNotes" rows="3"></textarea></label>
+    <div class="row btns">
+      <button id="sSave" class="main">حفظ</button>
+      <button id="sCancel">إلغاء</button>
+      <button id="sDel" class="danger" hidden>حذف</button>
+    </div>
+  </div>
+</div>
+
+<div id="viewer" hidden><img id="viewImg" alt=""><button class="x" id="viewClose">✕</button></div>
+<input type="file" id="photoIn" accept="image/*" hidden>
+<div id="toast" hidden></div>
+<script src="leaflet/leaflet.js"></script>
+<script src="geo.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
