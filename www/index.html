@@ -21,6 +21,7 @@
     <button id="dUndo">↩ تراجع</button>
     <button id="dCenter">＋ المركز</button>
     <button id="dGps">＋ موقعي</button>
+    <button id="dAuto">🚶 تتبع</button>
     <button id="dDone" class="main">✔ إنهاء</button>
     <button id="dCancel">✕</button>
   </div>
@@ -30,8 +31,18 @@
   <button id="btnLoc"><b>📡</b><small>موقعي</small></button>
   <button id="btnAddGps"><b>📍</b><small>نقطة هنا</small></button>
   <button id="btnAdd" class="main"><b>＋</b><small>عند المركز</small></button>
+  <button id="btnDraw"><b>✏️</b><small>رسم</small></button>
   <button id="btnList"><b>📋</b><small>العناصر (<span id="count">0</span>)</small></button>
   <button id="btnMore"><b>⋯</b><small>المزيد</small></button>
+</div>
+
+<div id="sheetDraw" class="sheet" hidden>
+  <div class="sheet-h"><b>ماذا تريد أن ترسم؟</b><button class="x" data-close="sheetDraw">✕</button></div>
+  <div class="grid">
+    <button id="drLine" class="main">📏 خط (أنبوب / مسار)</button>
+    <button id="drPoly" class="main">⬠ مضلع (مساحة)</button>
+  </div>
+  <p class="note">طرق إضافة نقاط الخط: الضغط على الخريطة، أو زر ＋المركز (علامة +)، أو ＋موقعي، أو "🚶 تتبع" لتسجيل المسار تلقائياً أثناء المشي.</p>
 </div>
 
 <div id="sheetList" class="sheet" hidden>
@@ -42,12 +53,10 @@
 <div id="sheetMore" class="sheet" hidden>
   <div class="sheet-h"><b>أدوات</b><button class="x" data-close="sheetMore">✕</button></div>
   <div class="grid">
-    <button id="drLine" class="main">📏 رسم خط / مسار</button>
-    <button id="drPoly" class="main">⬠ رسم مضلع / مساحة</button>
     <button id="exGeo">تصدير GeoJSON</button>
     <button id="exCsv">تصدير CSV (Excel)</button>
     <button id="exKml">تصدير KML (Google Earth)</button>
-    <button id="imp">استيراد GeoJSON</button>
+    <button id="imp" class="main">استيراد KML / KMZ / GeoJSON</button>
     <button id="bkp">نسخة احتياطية كاملة (مع الصور)</button>
     <button id="rst">استعادة نسخة احتياطية</button>
     <button id="offArea">حفظ المنطقة الحالية أوفلاين</button>
@@ -55,8 +64,10 @@
     <button id="perm">فحص أذونات الموقع والكاميرا</button>
     <button id="clearAll" class="danger">حذف كل البيانات</button>
   </div>
+  <div class="setrow"><label>أقصى مستوى تقريب للصور الأصلية (أقمار صناعية) — قلّله لو ظهرت مربعات رمادية
+    <select id="nz"><option value="16">16</option><option value="17">17</option><option value="18">18 (موصى به)</option><option value="19">19</option></select></label></div>
   <p class="note">اضغط على شريط الإحداثيات بالأعلى للتبديل بين الدرجات العشرية وUTM. الخرائط: © OpenStreetMap contributors — Esri, Maxar, Earthstar Geographics. حفظ المنطقة محدود بـ 500 مربع للمرة الواحدة؛ راجع شروط المزوّد للاستخدام المكثف.</p>
-  <input type="file" id="file" accept=".geojson,.json,application/json" hidden>
+  <input type="file" id="file" hidden>
   <input type="file" id="fileBk" accept=".json,application/json" hidden>
 </div>
 
@@ -78,14 +89,7 @@
       <label>Easting<input id="fE" inputmode="decimal"></label>
       <label>Northing<input id="fN" inputmode="decimal"></label>
     </div>
-    <div class="row">
-      <label>عمق البئر (م)<input id="fDepth" inputmode="decimal"></label>
-      <label>التصريف (م³/ساعة)<input id="fYield" inputmode="decimal"></label>
-    </div>
-    <div class="row">
-      <label>الملوحة TDS (mg/L)<input id="fTds" inputmode="decimal"></label>
-      <label>منسوب المياه الساكن (م)<input id="fSwl" inputmode="decimal"></label>
-    </div>
+    <div id="dyn"></div>
     <label>ملاحظات<textarea id="fNotes" rows="2"></textarea></label>
     <label>الصور</label>
     <div id="thumbs"></div>
@@ -107,6 +111,8 @@
     <label>الاسم<input id="sName" placeholder="مثال: خط ناقل رئيسي"></label>
     <label>التصنيف<select id="sCat"></select></label>
     <div id="sStats" class="stats"></div>
+    <div id="sDyn"></div>
+    <datalist id="ptnames"></datalist>
     <label>ملاحظات (قطر الأنبوب، المادة…)<textarea id="sNotes" rows="3"></textarea></label>
     <div class="row btns">
       <button id="sSave" class="main">حفظ</button>
@@ -120,6 +126,8 @@
 <input type="file" id="photoIn" accept="image/*" hidden>
 <div id="toast" hidden></div>
 <script src="leaflet/leaflet.js"></script>
+<script src="leaflet/leaflet-rotate.js"></script>
+<script src="jszip.min.js"></script>
 <script src="geo.js"></script>
 <script src="app.js"></script>
 </body>

@@ -1,5 +1,5 @@
-const APP = 'app-v2', TILES = 'tiles-v1';
-const SHELL = ['./', 'index.html', 'app.js', 'geo.js', 'style.css', 'manifest.json', 'icon.svg', 'icon-512.png', 'leaflet/leaflet.js', 'leaflet/leaflet.css',
+const APP = 'app-v3', TILES = 'tiles-v1';
+const SHELL = ['./', 'index.html', 'app.js', 'geo.js', 'jszip.min.js', 'style.css', 'manifest.json', 'icon.svg', 'icon-512.png', 'leaflet/leaflet.js', 'leaflet/leaflet-rotate.js', 'leaflet/leaflet.css',
   'leaflet/images/layers.png', 'leaflet/images/layers-2x.png', 'leaflet/images/marker-icon.png', 'leaflet/images/marker-shadow.png'];
 const TILE_HOSTS = ['tile.openstreetmap.org', 'server.arcgisonline.com'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(APP).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
