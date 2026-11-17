@@ -135,6 +135,8 @@ const LAYERS = {
 const LABELS_URL = 'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}';
 const map = L.map('map', { zoomControl: false, center: view.c, zoom: view.z, maxZoom: 22, rotate: true, touchRotate: true, shiftKeyRotate: true, bearing: 0, rotateControl: false });
 const CAN_ROT = typeof map.setBearing === 'function';
+map.attributionControl.setPrefix('<a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a>');
+map.attributionControl.setPosition('topright');
 L.control.zoom({ position: 'topright' }).addTo(map);
 L.control.scale({ position: 'bottomleft', imperial: false }).addTo(map);
 const bases = {}; let currentKey = LAYERS[view.l] ? view.l : 'osm';

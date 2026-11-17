@@ -63,3 +63,5 @@ input,select,textarea{width:100%;font:inherit;padding:9px;border:1px solid var(-
 .dyn-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 8px}
 .dyn-grid .full{grid-column:1/3}
 .nu{display:flex;gap:4px}.nu input{flex:2}.nu select{flex:1.4}
+.leaflet-control-attribution{font-size:8px!important;line-height:1.25;max-width:60vw;direction:ltr;text-align:right;padding:1px 4px!important;background:rgba(255,255,255,.65)!important}
+.leaflet-control-attribution a{color:#0b5d7a}
